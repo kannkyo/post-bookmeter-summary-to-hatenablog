@@ -10,9 +10,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.remote.webelement import WebElement
 
 import hatenablog
-import login_page
+import bookmeter_login_page
+import bookmeter_summary_page
 import secret
-import summary_page
 
 level = os.environ.get('LOG_LEVEL', 'INFO')
 
@@ -43,19 +43,17 @@ def get_blog_html_content(driver: webdriver, user_info: dict):
     driver.get(HOME_BASE_URL)
 
     # Login
-    login_page.login(driver, user_info['name'], user_info['password'])
+    bookmeter_login_page.login(
+        driver=driver,
+        username=user_info['name'],
+        password=user_info['password'])
 
     # Open Summary Page
-    summary_page.open_blog_summary(driver=driver,
-                                   user_info=user_info,
-                                   order="desc",
-                                   insert_break=True,
-                                   image_size="large")
+    bookmeter_summary_page.open_blog_summary(
+        driver=driver, user_id=user_info['id'])
 
-    blog_html_textarea: WebElement = driver.find_element_by_xpath(
-        '//*[@id="externalpost-blog"]/div/div[2]/div[1]/textarea')
-
-    blog_html_content = blog_html_textarea.get_attribute('value')
+    blog_html_content = bookmeter_summary_page.get_blog_html_content(
+        driver=driver)
 
     logger.info("get blog content")
     logger.debug(user_info)
@@ -72,10 +70,15 @@ def lambda_handler(event, context):
     logger.debug(event)
 
     try:
-        secret_hatenablog = secret.get_secret(
-            secret_name="Hatenablog/kannkyoshi")
+        region_name = "ap-northeast-1"
 
-        secret_bookmeter = secret.get_secret(secret_name="Bookmeter/kannkyo")
+        secret_hatenablog = secret.get_secret(
+            region_name=region_name,
+            secret_name=os.environ.get('HATENABLOG_SECRET_NAME'))
+
+        secret_bookmeter = secret.get_secret(
+            region_name=region_name,
+            secret_name=os.environ.get('BOOKMETER_SECRET_NAME'))
 
         # Open chrome
         options = Options()

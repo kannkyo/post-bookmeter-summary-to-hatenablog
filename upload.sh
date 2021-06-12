@@ -2,6 +2,8 @@
 
 FUNCTION_NAME=post-bookmeter-summary-to-hatenablog
 
+rm -f lambda.zip
+
 pushd src
     zip -rq ../lambda.zip .
 popd

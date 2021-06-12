@@ -2,13 +2,12 @@ import boto3
 import base64
 import logging
 import json
+from botocore.exceptions import ClientError
 
 logger = logging.getLogger()
 
-region_name = "ap-northeast-1"
 
-
-def get_secret(secret_name):
+def get_secret(region_name: str, secret_name: str):
     session = boto3.session.Session()
     client = session.client(
         service_name='secretsmanager',

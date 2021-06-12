@@ -9,10 +9,8 @@ logger = logging.getLogger()
 def post_hatenablog(secret_hatenablog: dict, blog_title: str, blog_body: str, is_draft: str = "no", category: str = "読書メーター"):
     logger.info("post hatenablog")
 
-    url_text = f"https://blog.hatena.ne.jp/{secret_hatenablog['hatena_id']}/{secret_hatenablog['blog_domain']}/atom/entry"
-
+    url = f"https://blog.hatena.ne.jp/{secret_hatenablog['hatena_id']}/{secret_hatenablog['blog_domain']}/atom/entry"
     headers = {'Content-Type': 'application/xml'}
-
     data = f"""
 <?xml version="1.0" encoding="utf-8"?>
 <entry xmlns="http://www.w3.org/2005/Atom" xmlns:app="http://www.w3.org/2007/app">
@@ -27,15 +25,17 @@ def post_hatenablog(secret_hatenablog: dict, blog_title: str, blog_body: str, is
     </app:control>
 </entry>
     """
+    auth = HTTPBasicAuth(
+        secret_hatenablog["hatena_id"],
+        secret_hatenablog["api_key"])
+
     logger.debug(f"data={data}")
 
     response = requests.post(
-        url=url_text,
+        url=url,
         headers=headers,
         data=data.replace('\n', '').encode("utf-8"),
-        auth=HTTPBasicAuth(
-            secret_hatenablog["hatena_id"],
-            secret_hatenablog["api_key"]))
+        auth=auth)
 
     logger.info(response.content)
 
