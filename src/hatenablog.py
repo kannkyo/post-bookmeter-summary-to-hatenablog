@@ -17,7 +17,7 @@ def post_hatenablog(secret_hatenablog: dict, blog_title: str, blog_body: str, is
 <entry xmlns="http://www.w3.org/2005/Atom" xmlns:app="http://www.w3.org/2007/app">
     <title>{blog_title}</title>
     <author><name>{secret_hatenablog['hatena_id']}</name></author>
-    <content type="text/x-markdown">{escape(f"{blog_body}<br/><br/>posted by AWS Lambda")}</content>
+    <content type="text/x-markdown">{escape(f"{blog_body} posted by AWS Lambda")}</content>
     <category term="{category}"/>
     <app:control>
         <app:draft>{is_draft}</app:draft>
