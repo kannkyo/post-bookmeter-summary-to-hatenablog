@@ -36,7 +36,11 @@ logger = logging.getLogger()
 logger.setLevel(logger_level())
 
 
-def get_blog_html_content(driver: webdriver, user_info: dict):
+def get_blog_html_content(
+    driver: webdriver,
+    name: str,
+    id: str,
+    password: str):
     HOME_BASE_URL = "https://bookmeter.com/home/"
 
     # Open Login Site
@@ -45,18 +49,18 @@ def get_blog_html_content(driver: webdriver, user_info: dict):
     # Login
     bookmeter_login_page.login(
         driver=driver,
-        username=user_info['name'],
-        password=user_info['password'])
+        username=name,
+        password=password)
 
     # Open Summary Page
     bookmeter_summary_page.open_blog_summary(
-        driver=driver, user_id=user_info['id'])
+        driver=driver, user_id=id)
 
     blog_html_content = bookmeter_summary_page.get_blog_html_content(
         driver=driver)
 
     logger.info("get blog content")
-    logger.debug(user_info)
+    logger.debug("name={name}, id={id}, password={password}")
 
     return blog_html_content
 
@@ -72,13 +76,9 @@ def lambda_handler(event, context):
     try:
         region_name = "ap-northeast-1"
 
-        secret_hatenablog = secret.get_secret(
+        secrets = secret.get_secret(
             region_name=region_name,
-            secret_name=os.environ.get('HATENABLOG_SECRET_NAME'))
-
-        secret_bookmeter = secret.get_secret(
-            region_name=region_name,
-            secret_name=os.environ.get('BOOKMETER_SECRET_NAME'))
+            secret_name=os.environ.get('SECRET_NAME'))
 
         # Open chrome
         options = Options()
@@ -92,13 +92,18 @@ def lambda_handler(event, context):
 
         blog_html_content = get_blog_html_content(
             driver=driver,
-            user_info=secret_bookmeter)
+            name=secrets[os.environ.get('BOOKMETER_NAME')],
+            password=secrets[os.environ.get('BOOKMETER_PASSWORD')],
+            id=secrets[os.environ.get('BOOKMETER_ID')])
 
         blog_title = get_title()
 
-        response = hatenablog.post_hatenablog(secret_hatenablog=secret_hatenablog,
-                                              blog_body=blog_html_content,
-                                              blog_title=blog_title,)
+        response = hatenablog.post_hatenablog(
+            api_key=secrets[os.environ.get('HATENABLOG_API_KEY')],
+            hatena_id=secrets[os.environ.get('HATENABLOG_HATENA_ID')],
+            blog_domain=secrets[os.environ.get('HATENABLOG_BLOG_DOMAIN')],
+            blog_body=blog_html_content,
+            blog_title=blog_title)
         # Wait
         time.sleep(1)
 
