@@ -5,7 +5,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 def open_blog_summary(driver: webdriver, user_id: str, order: str = "desc", insert_break: bool = True, image_size: str = "medium"):
     driver.get(
-        f"https://bookmeter.com/users/{user_id}/summary/posting/blog/?order={order}&insert_break={insert_break}&image_size={image_size}#blog_html")
+        f"https://bookmeter.com/users/{user_id}/summary/yearly/posting/blog/?order={order}&insert_break={insert_break}&image_size={image_size}#blog_html")
 
 
 def get_blog_html_content(driver: webdriver):

@@ -66,8 +66,8 @@ def get_blog_html_content(
 
 
 def get_title():
-    previous_month = datetime.today() - relativedelta(months=1)
-    return f"{previous_month.year}年{previous_month.month}月の読書メーター"
+    previous_year = datetime.today() - relativedelta(years=1)
+    return f"{previous_year.year}年の読書メーター"
 
 
 def lambda_handler(event, context):

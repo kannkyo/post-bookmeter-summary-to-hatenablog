@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FUNCTION_NAME=post-bookmeter-summary-to-hatenablog
+FUNCTION_NAME=post-bookmeter-yearly-summary-to-hatenablog
 
 rm -f lambda.zip
 
